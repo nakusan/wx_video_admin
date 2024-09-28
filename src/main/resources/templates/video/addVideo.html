@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">>
+
+<body>
+
+<div th:fragment="addVideo">
+    <!-- BEGIN PAGE HEADER-->
+    <!-- BEGIN PAGE BAR -->
+    <div class="page-bar">
+        <ul class="page-breadcrumb">
+            <li>
+                <span>首页</span>
+                <i class="fa fa-circle"></i>
+            </li>
+            <li>
+                <span>视频信息</span>
+                <i class="fa fa-circle"></i>
+            </li>
+            <li>
+                <span>添加视频</span>
+            </li>
+        </ul>
+    </div>
+    <!-- END PAGE BAR -->
+    <!-- END PAGE HEADER-->
+    <div class="row">
+        <div class="col-md-12">
+            <br/>
+            <div class="tabbable-line boxless tabbable-reversed">
+                <div class="portlet box green-jungle">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="icon-plus"></i>添加视频
+                        </div>
+                    </div>
+
+                    <div class="portlet-body form">
+
+                        <!-- BEGIN FORM-->
+                        <form id="addVideoForm" class="form-horizontal">
+                            <div class="form-body">
+
+<!--                                <div class="form-group">-->
+<!--                                    <label class="col-md-3 control-label"><span class="field-required"> * </span>视频类型：</label>-->
+<!--                                    <div class="col-md-4">-->
+<!--                                        <div id="input-error">-->
+<!--                                            <input id="type" name="type" type="text" class="form-control" placeholder="1-4字" />-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label"><span class="field-required"> * </span>视频名称：</label>
+                                    <div class="col-md-4">
+                                        <div id="input-error">
+                                            <input id="filename" name="filename" type="text" class="form-control" placeholder="1-50字" />
+                                        </div>
+                                    </div>
+                                </div>
+
+<!--                                <div class="form-group">-->
+<!--                                    <label class="col-md-3 control-label"><span class="field-required"> * </span>视频介绍：</label>-->
+<!--                                    <div class="col-md-4">-->
+<!--                                        <div id="input-error">-->
+<!--                                            <textarea id="introduce" name="introduce" rows="5" cols="50" class="form-control"></textarea>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label"><span class="field-required"> * </span>视频文件：</label>
+                                    <div class="col-md-4">
+                                        <div id="input-error">
+<!--                                            <input type="hidden" id="path" name="path" class="form-control"/>-->
+<!--                                             <input id="file" type="file" name="file" th:data-url="${#httpServletRequest.getContextPath()} + '/video/videoUpload'" accept="video/mp4"/>-->
+                                            <input id="file" type="file" name="file"/>
+                                            <!--进度条部分(默认隐藏)-->
+                                            <div style="display: none;" class="progress-body">
+                                                <div>
+                                                    <span style="width: 70px; display: inline-block; text-align: left">上传进度：</span>
+                                                    <progress></progress>
+                                                    <percentage>0%</percentage>
+                                                </div>
+                                                <div>
+                                                    <span style="width: 70px; display: inline-block; text-align: left">上传速度：</span>
+                                                    <span style="width: 300px;" class="progress-speed"></span>
+                                                </div>
+                                                <div>
+                                                    <span style="width: 70px; display: inline-block; text-align: left">上传状态：</span>
+                                                    <span style="width: 300px;" class="progress-info"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <div class="row">
+                                    <div class="col-md-offset-3 col-md-9">
+                                        <input id="submit" type="submit" class="btn green-jungle" value="上 传" />
+                                        <input id="reset" type="reset" class="btn grey-salsa btn-outline" value="取 消" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- END FORM-->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 进度条css -->
+    <style type="text/css">
+        progress {
+            background-color: #56BE64;
+            width: 300px;
+        }
+        progress::-webkit-progress-bar {
+            background: #ccc;
+        }
+        progress::-webkit-progress-value {
+            background: #56BE64;
+        }
+        percentage {
+            position: position;
+            right: 10px;
+        }
+    </style>
+
+    <script>
+        // all input to disabled
+        function disabled() {
+            $("#filename").prop('disabled', true);
+            $("#file").prop('disabled', true);
+            $("#submit").prop('disabled', true);
+            $("#reset").prop('disabled', true);
+        }
+        //all input to enable
+        function enable() {
+            $("#filename").prop('disabled', false);
+            $("#file").prop('disabled', false);
+            $("#submit").prop('disabled', false);
+            $("#reset").prop('disabled', false);
+        }
+        var start = 0;
+        //显示进度条的函数
+        function showProgress() {
+            start = new Date().getTime();
+            $(".progress-body").css("display", "block");
+            this.disabled();
+        }
+        //隐藏进度条的函数
+        function hideProgress() {
+            $("#file").val('');
+            $('.progress-body .progress-speed').html("0 M/S, 0/0M");
+            $('.progress-body progress').html("0%");
+            $(".progress-body").css("display", "none");
+            this.enable();
+        }
+        //进度条更新
+        function progressHandle(e) {
+            // $('.progress-body progress').attr({value: e.loaded, max: e.total});
+            var percent = e.loaded / e.total * 100;
+            // var time = ((new Date().getTime() - start) / 1000).toFixed(3);
+            // if (time == 0) {
+            //     time = 1;
+            // }
+            // $('.progress-body .progress-speed').html(((e.loaded / 1024) / 1024 / time).toFixed(2) + "M/S, " + ((e.loaded / 1024) / 1024).toFixed(2) + "/" + ((e.total / 1024) / 1024).toFixed(2) + " MB. ");
+            // $('.progress-body percentage').html(percent.toFixed(2) + "%");
+            if (percent == 100) {
+                $('.progress-body .progress-info').html("文件解析完成,准备上传服务器...");
+            } else {
+                $('.progress-body .progress-info').html("文件解析中...");
+            }
+        }
+        //上传完成处理函数
+        function completeHandle(e) {
+            // $('.progress-body .progress-info').html("文件解析完成");
+            // setTimeout(hideProgress, 2000);
+        }
+        //上传出错处理函数
+        function failedHandle(e) {
+            $('.progress-body .progress-info').html("文件解析出错, 请检查文件");
+            setTimeout(hideProgress, 2000);
+        }
+        //上传取消处理函数
+        function canceledHandle(e) {
+            $('.progress-body .progress-info').html("文件解析取消");
+            setTimeout(hideProgress, 2000);
+        }
+
+        var submitVideo = function () {
+            var socket = new WebSocket("ws://localhost:8085/management/upload/progress");
+            socket.onmessage = function(event) {
+                // console.log(event.data);
+                var obj = $.parseJSON(event.data);
+                $('.progress-body progress').attr({value: obj.loaded, max: obj.total});
+                var percentComplete = obj.percent
+                var time = ((new Date().getTime() - start) / 1000).toFixed(3);
+                if (time == 0) {
+                    time = 1;
+                }
+                $('.progress-body .progress-speed').html(((obj.loaded / 1024) / 1024 / time).toFixed(2) + "M/S, " + ((obj.loaded / 1024) / 1024).toFixed(2) + "/" + ((obj.total / 1024) / 1024).toFixed(2) + " MB. ");
+                $('.progress-body percentage').html(percentComplete.toFixed(2) + "%");
+                if (percentComplete == 100) {
+                    $('.progress-body .progress-info').html("文件上传完成,后台正在处理...");
+                } else {
+                    $('.progress-body .progress-info').html("文件上传中...");
+                }
+            };
+            socket.onopen = function() {
+                console.log("WebSocket connection opened");
+            };
+            socket.onerror = function(error) {
+                console.log("WebSocket error: " + error);
+            };
+            socket.onclose = function() {
+                console.log("WebSocket connection closed");
+            };
+            //
+            $('#addVideoForm').ajaxSubmit({
+                url: $('#hdnContextPath').val() + '/management/upload',
+                type: 'POST',
+                enctype: 'multipart/form-data',
+                cache: false,
+                processData: false,
+                contentType: false,
+                xhr: function () {
+                    var xhr = $.ajaxSettings.xhr();
+                    if (xhr.upload) {
+                        //处理进度条的事件
+                        xhr.upload.addEventListener("progress", progressHandle, false);
+                        //加载完成的事件
+                        xhr.addEventListener("load", completeHandle, false);
+                        //加载出错的事件
+                        xhr.addEventListener("error", failedHandle, false);
+                        //加载取消的事件
+                        xhr.addEventListener("abort", canceledHandle, false);
+                        //开始显示进度条
+                        showProgress();
+                        return xhr;
+                    }
+                },
+                success: function (data) {
+                    if (data.status === 200 && data.msg === 'OK') {
+                        alert("Upload successful!")
+                    }
+                    if (socket.readyState === WebSocket.OPEN) {
+                        socket.close();
+                    }
+                    $('#videoListMenu').click();
+                },
+                error: function (data) {
+                    console.log(data);
+                    if (socket.readyState === WebSocket.OPEN) {
+                        socket.close();
+                    }
+                    alert("Upload failed!")
+                }
+            });
+        };
+
+        $('#addVideoForm').validate({
+            errorElement: 'span', //default input error message container
+            errorClass: 'help-block', // default input error message class
+            focusInvalid: false, // do not focus the last invalid input
+            ignore: "", // validate all fields including form hidden input
+            rules: {
+                filename: {
+                    required: true,
+                    rangelength: [1,50]
+                },
+                file: {
+                    required: true
+                }
+            },
+            messages: {
+                name: {
+                    required: "视频名称不能为空.",
+                    rangelength: "视频名称长度请控制在1-50位."
+                },
+                file: {
+                    required: "文件不能为空."
+                }
+            },
+            invalidHandler: function(event, validator) { //display error alert on form submit
+                $('.alert-danger', $('#addVideoForm')).show();
+            },
+
+            highlight: function(element) { // hightlight error inputs
+                $(element).closest('.form-group').addClass('has-error'); // set error class to the control group
+            },
+            success: function(label) {
+                label.closest('.form-group').removeClass('has-error');
+                label.remove();
+            },
+            errorPlacement: function(error, element) {
+                error.insertAfter(element.closest('#input-error'));
+            },
+            submitHandler: function(form) {
+                submitVideo();
+            }
+        });
+    </script>
+</div>
+
+</body>
+</html>

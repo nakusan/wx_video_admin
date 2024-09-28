@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wx.video.mapper.VideoMapper" >
+<!--  <resultMap id="BaseResultMap" type="com.wx.video.model.Video" >-->
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <!--
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="audio_id" property="audioId" jdbcType="VARCHAR" />
+    <result column="video_desc" property="videoDesc" jdbcType="VARCHAR" />
+    <result column="video_path" property="videoPath" jdbcType="VARCHAR" />
+    <result column="video_seconds" property="videoSeconds" jdbcType="REAL" />
+    <result column="video_width" property="videoWidth" jdbcType="INTEGER" />
+    <result column="video_height" property="videoHeight" jdbcType="INTEGER" />
+    <result column="cover_path" property="coverPath" jdbcType="VARCHAR" />
+    <result column="like_counts" property="likeCounts" jdbcType="BIGINT" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    -->
+<!--    <id column="id" property="id" jdbcType="VARCHAR" />-->
+<!--    <result column="video_name" property="videoName" jdbcType="VARCHAR" />-->
+<!--    <result column="video_desc" property="videoDesc" jdbcType="VARCHAR" />-->
+<!--    <result column="video_path" property="videoPath" jdbcType="VARCHAR" />-->
+<!--    <result column="video_seconds" property="videoSeconds" jdbcType="VARCHAR" />-->
+<!--    <result column="sales_counts" property="salesCounts" jdbcType="BIGINT" />-->
+<!--    <result column="status" property="status" jdbcType="INTEGER" />-->
+<!--    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />-->
+<!--    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />-->
+<!--  </resultMap>-->
+    <!--
+      <select id="selectAllVideo" resultMap="BaseResultMap">
+        select v.id            as id,
+               v.video_desc    as videoDesc,
+               v.video_path    as videoPath,
+               v.video_seconds as videoSeconds,
+               v.cover_path    as coverPath,
+               v.sales_counts  as salesCounts,
+               v.status        as status,
+               v.create_time   as createTime
+        from video v
+        order by v.create_time desc
+      </select>
+      -->
+
+    </mapper>
