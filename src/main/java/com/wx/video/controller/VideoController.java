@@ -1,12 +1,20 @@
 package com.wx.video.controller;
 
 import com.wx.video.enums.VideoStatusEnum;
+import com.wx.video.model.Category;
+import com.wx.video.model.Video;
 import com.wx.video.service.VideoService;
 import com.wx.video.utils.JsonResult;
 import com.wx.video.utils.PagedResult;
+import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @description 视频控制器
@@ -50,6 +58,28 @@ public class VideoController {
     }
 
     /**
+     * 编辑视频
+     * @return 视频id
+     */
+    @PostMapping("/updateVideo")
+    @ResponseBody
+    public JsonResult updateVideo(@RequestParam String videoId,
+                                  BigDecimal price,
+                                  String videoTitle,
+                                  String videoCategory,
+                                  String videoDesc) {
+        Video video = new Video();
+        video.setVideoId(videoId);
+        video.setPrice(price);
+        video.setVideoTitle(videoTitle);
+        video.setCategoryId(Integer.parseInt(videoCategory));
+        video.setVideoDesc(videoDesc);
+        video.setUpdateTime(new Date());
+        videoService.updateVideo(video);
+        return JsonResult.ok();
+    }
+
+    /**
      * 禁播视频
      * @param videoId 视频id
      * @return 禁播视频成功
@@ -69,6 +99,24 @@ public class VideoController {
     @GetMapping("/showAddVideo")
     public String showAddVideo() {
         return "video/addVideo";
+    }
+
+    /**
+     * 跳转到视频编辑页面
+     * @return 视频编辑页面路径
+     */
+    @GetMapping("/showUpdateVideo")
+    public String showUpdateVideo(@RequestParam String videoId, Model model) {
+        Video video = videoService.queryVideoById(videoId);
+        model.addAttribute("video", video);
+        return "video/updateVideo";
+    }
+
+    @GetMapping("/categories")
+    @ResponseBody
+    public JsonResult getCategories() {
+        List<Category> categories = videoService.getAllCategories();
+        return JsonResult.ok(categories);
     }
 
 }

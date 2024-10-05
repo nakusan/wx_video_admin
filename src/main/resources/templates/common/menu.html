@@ -37,7 +37,7 @@
                     </a>
                     <ul class="sub-menu">
                         <li class="nav-item ">
-                            <a th:href="${#httpServletRequest.getContextPath()} + '/management/showList'" class="ajaxify nav-link ">
+                            <a th:href="${#httpServletRequest.getContextPath()} + '/management/showList'" class="ajaxify nav-link">
                                 <span class="title">用户列表</span>
                             </a>
                         </li>
@@ -53,13 +53,17 @@
                     </a>
                     <ul class="sub-menu">
                         <li class="nav-item ">
-                            <a id="videoListMenu" th:href="${#httpServletRequest.getContextPath()} + '/management/showVideoList'" class="ajaxify nav-link ">
+                            <a id="videoListMenu" th:href="${#httpServletRequest.getContextPath()} + '/management/showVideoList'" class="ajaxify nav-link">
                                 <span class="title">视频管理</span>
                             </a>
                         </li>
                         <li class="nav-item ">
-                            <a th:href="${#httpServletRequest.getContextPath()} + '/management/showAddVideo'" class="ajaxify nav-link ">
-                                <span class="title">添加视频</span>
+                            <a th:href="${#httpServletRequest.getContextPath()} + '/management/showAddVideo'" class="ajaxify nav-link">
+                                <span class="title">视频添加</span>
+                            </a>
+                        </li>
+                        <li class="nav-item hidden">
+                            <a id="updateVideoShow" class="ajaxify nav-link">
                             </a>
                         </li>
                     </ul>

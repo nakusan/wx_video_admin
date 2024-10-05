@@ -1,8 +1,5 @@
-package com.wx.video.model;
+package com.wx.video.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import lombok.Data;
 
@@ -10,10 +7,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-@TableName("videos")
-public class Video implements Serializable {
+public class VideoVO implements Serializable {
 
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     private String videoId;
     private String videoTitle;
@@ -23,6 +18,7 @@ public class Video implements Serializable {
     private String duration;
     private Integer salesCounts;
     private Integer categoryId;
+    private String categoryName;
     private BigDecimal price;
     private Integer status;
     private Integer isDelete;

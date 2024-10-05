@@ -76,10 +76,10 @@ public class FileServiceImpl implements FileService {
 
             video = new Video();
             video.setVideoId(id); //VideoId
-            video.setVideoSeconds(videoDuration); // 视频时长
+            video.setDuration(videoDuration); // 视频时长
             video.setVideoPath(url); // 视频存放地址
-            video.setSalesCounts(0L); // 售出件数
             video.setStatus(VideoStatusEnum.FORBID.getValue()); // 状态初始化
+            video.setIsDelete(VideoStatusEnum.ACTIVE.getValue()); // 删除标记
             video.setCreateTime(currentDate); // 创建时间
             video.setUpdateTime(currentDate); // 更新时间
 

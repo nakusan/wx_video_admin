@@ -21,6 +21,13 @@ var deleteVideo = function (videoId) {
     })
 };
 
+var updateVideo = function (videoId) {
+    // 构建更新页面的 URL
+    var updateUrl = $("#hdnContextPath").val() + "/management/showUpdateVideo?videoId=" + videoId;
+    $("#updateVideoShow").attr("href", updateUrl);
+    $("#updateVideoShow").click();
+};
+
 var toggleStatus = function (videoId, targetStatus) {
     $.ajax({
         url: $("#hdnContextPath").val() + "/management/toggleStatus?videoId=" + videoId + "&videoStatus=" + targetStatus,
@@ -72,11 +79,12 @@ var VideoList = function () {
             mtype: "post",  
             styleUI: 'Bootstrap',//设置jqgrid的全局样式为bootstrap样式  
             datatype: "json",  
-            colNames: ['ID', '视频标题', '视频内容', '时长', '购买数', '状态', '创建时间', '操作'],
+            colNames: ['ID', '分类', '标题', '内容', '时长', '价格', '购买数', '状态', '创建时间', '操作'],
             colModel: [  
-                { name: 'videoId', index: 'videoId', width: 25, sortable: false, hidden: true },
-                { name: 'videoName', index: 'videoName', width: 60, sortable: false },
-                { name: 'videoPath', index: 'videoPath', width: 30, sortable: false,
+                { name: 'videoId', index: 'videoId', width: 20, sortable: false, hidden: true },
+                { name: 'categoryName', index: 'categoryName', width: 15, sortable: false },
+                { name: 'videoTitle', index: 'videoTitle', width: 45, sortable: false },
+                { name: 'videoPath', index: 'videoPath', width: 15, sortable: false,
                     formatter:function(cellvalue, options, rowObject) {
                         var src = apiServer + cellvalue;
                         // var display = "<a href='" + src + "' target='_blank'>点我播放</a>";
@@ -84,28 +92,31 @@ var VideoList = function () {
                         return display;
                     }
                 },
-                { name: 'videoSeconds', index: 'videoSeconds', width: 20, sortable: false },
-                { name: 'salesCounts', index: 'salesCounts', width: 20, sortable: false },
-                { name: 'status', index: 'status', width: 15, sortable: false, hidden: false,
+                { name: 'duration', index: 'duration', width: 15, sortable: false },
+                { name: 'price', index: 'price', width: 10, sortable: false },
+                { name: 'salesCounts', index: 'salesCounts', width: 10, sortable: false },
+                { name: 'status', index: 'status', width: 10, sortable: false, hidden: false,
                 	formatter:function(cellvalue, options, rowObject) {
-			    		return cellvalue === 1 ? '正常' : '禁播';
+                        var color = cellvalue === 2 ? 'green' : 'red';
+                        var text = cellvalue === 2 ? '正常' : '禁播';
+                        return '<span style="color: ' + color + ';">' + text + '</span>';
 			    	}
 			    },
                 { name: 'createTime', index: 'createTime', width: 20, sortable: false, hidden: false,
                 	formatter:function(cellvalue, options, rowObject) {
-                		var createTime = Common.formatTime(cellvalue,'yyyy-MM-dd HH:mm:ss');
-			    		return createTime;
+			    		return Common.formatTime(cellvalue,'yyyy-MM-dd HH:mm:ss');
 			    	}
 			    },
-                { name: '', index: '', width: 16,
+                { name: '', index: '', width: 25,
                     formatter: function (cellvalue, option, rowObject) {
                         var html = '';
-                        if (rowObject.status === 1) {
-                            html += '<button class="btn btn-outline red" onclick=toggleStatus("' + rowObject.videoId + '",2) style="padding: 1px 3px 1px 3px;">禁止</button>&nbsp;&nbsp;';
+                        if (rowObject.status === 2) {
+                            html += '<button class="btn btn-danger" onclick=toggleStatus("' + rowObject.videoId + '",0) style="padding: 1px 3px 1px 3px;">禁止</button>&nbsp;&nbsp;';
                         } else {
-                            html += '<button class="btn btn-outline green-sharp" onclick=toggleStatus("' + rowObject.videoId + '",1) style="padding: 1px 3px 1px 3px;">发布</button>&nbsp;&nbsp;';
+                            html += '<button class="btn btn-success" onclick=toggleStatus("' + rowObject.videoId + '",1) style="padding: 1px 3px 1px 3px;">发布</button>&nbsp;&nbsp;';
                         }
-                        html += '<button class="btn btn-outline brown" id="" onclick=deleteVideo("' + rowObject.videoId + '") style="padding: 1px 3px 1px 3px;">删除</button>';
+                        html += '<button class="btn btn-outline blue-sharp" id="" onclick=updateVideo("' + rowObject.videoId + '") style="padding: 1px 3px 1px 3px;">编辑</button>&nbsp;&nbsp;';
+                        html += '<button class="btn btn-outline yellow-gold" id="" onclick=deleteVideo("' + rowObject.videoId + '") style="padding: 1px 3px 1px 3px;">删除</button>';
                         return html;
                     }
                 }

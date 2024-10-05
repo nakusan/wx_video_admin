@@ -29,13 +29,12 @@ public class FileController {
     @PostMapping("/upload")
     @ResponseBody
     public JsonResult upload(
-//            @ApiParam(name = "file", value = "文件", required = true)
             @RequestParam("filename") String filename,
             @RequestParam("file") MultipartFile file) {
         try {
             Video video = fileService.upload(file);
 
-            video.setVideoName(filename); // 视频名
+            video.setVideoTitle(filename); // 视频Title
             // 添加视频到数据库
             videoService.addVideo(video);
         } catch (Exception e) {

@@ -1,40 +1,15 @@
 package com.wx.video.service;
 
+import com.wx.video.model.Category;
 import com.wx.video.model.Video;
 import com.wx.video.utils.PagedResult;
+
+import java.util.List;
 
 /**
  * @description 视频服务
  */
 public interface VideoService {
-//    /**
-//     * 添加背景乐
-//     * @param bgm 背景乐
-//     */
-//    void addBgm(Bgm bgm);
-
-//    /**
-//     * 分页查询背景乐列表
-//     * @param page 当前页数
-//     * @param pageSize 每页条数
-//     * @return 分页结果
-//     */
-//    PagedResult queryBgmList(Integer page, Integer pageSize);
-
-//    /**
-//     * 删除背景乐
-//     * @param bgmId 背景乐id
-//     */
-//    void delBgm(String bgmId);
-
-//    /**
-//     * 分页查询举报视频列表
-//     * @param page 当前页数
-//     * @param pageSize 每页条数
-//     * @return 分页结果
-//     */
-//    PagedResult queryReportList(Integer page, Integer pageSize);
-
     /**
      * 添加视频
      * @param video 视频
@@ -61,4 +36,19 @@ public interface VideoService {
      * @param videoId 视频id
      */
     void delVideo(String videoId);
+
+    /**
+     * 编辑视频
+     * @param video 视频信息
+     */
+    void updateVideo(Video video);
+
+    /**
+     * 根据视频id查询视频信息
+     * @param videoId 视频id
+     * @return 视频信息
+     */
+    Video queryVideoById(String videoId);
+
+    List<Category> getAllCategories();
 }

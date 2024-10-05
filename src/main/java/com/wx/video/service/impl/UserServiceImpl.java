@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
      * @return 包含用户列表的分页结果对象
      */
     @Override
-    @Cacheable(key = "methodName + #p0.openid + #p0.nickname + #p1 + #p2")
+//    @Cacheable(key = "methodName + #p0.openid + #p0.nickname + #p1 + #p2")
     public PagedResult queryUserList(User user, Integer page, Integer pageSize) {
         // 初始化昵称变量
         String nickname = null;
