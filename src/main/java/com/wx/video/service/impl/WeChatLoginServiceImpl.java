@@ -1,5 +1,6 @@
 package com.wx.video.service.impl;
 
+import com.wx.video.config.WxConfig;
 import com.wx.video.mapper.UserMapper;
 import com.wx.video.model.User;
 import com.wx.video.service.UserService;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,16 +19,10 @@ import java.util.Map;
 @Slf4j
 public class WeChatLoginServiceImpl implements WeChatLoginService {
 
-    @Value("${wx.appId}")
-    private String appId;
+    @Resource
+    private WxConfig wxConfig;
 
-    @Value("${wx.appSecret}")
-    private String appSecret;
-
-    @Value("${wx.wxUrl}")
-    private String wxUrl;
-
-    @Autowired
+    @Resource
     private UserService userService;
 
     /**
@@ -41,7 +37,7 @@ public class WeChatLoginServiceImpl implements WeChatLoginService {
         try {
             // 构造请求微信API的URL，包含小程序的appid、appsecret以及用户的临时登录凭证
             String url = String.format("%s?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
-                    wxUrl, appId, appSecret, code);
+                    wxConfig.getWxUrl(), wxConfig.getAppId(), wxConfig.getAppSecret(), code);
 
             // 使用RestTemplate发送HTTP GET请求到微信API
             RestTemplate restTemplate = new RestTemplate();
