@@ -3,7 +3,7 @@
 <mapper namespace="com.wx.video.mapper.VideoMapper" >
 
     <select id="queryAllVideos" resultType="com.wx.video.model.vo.VideoVO">
-        select v.id            as id,
+        SELECT v.id            as id,
                v.video_id      as videoId,
                v.video_title   as videoTitle,
                v.video_desc    as videoDesc,
@@ -18,10 +18,11 @@
                v.is_delete     as isDelete,
                v.create_time   as createTime,
                v.update_time   as updateTime
-        from videos v,
-             category c
-        where v.category_id = c.category_id
-        and v.is_delete = #{isDelete}
+        FROM videos v
+        LEFT JOIN category c
+        ON v.category_id = c.category_id
+        WHERE v.is_delete = #{isDelete}
+        ORDER BY v.id ASC
         LIMIT #{offset}, #{limit}
     </select>
 

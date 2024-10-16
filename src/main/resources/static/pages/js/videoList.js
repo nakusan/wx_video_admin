@@ -79,12 +79,18 @@ var VideoList = function () {
             mtype: "post",  
             styleUI: 'Bootstrap',//设置jqgrid的全局样式为bootstrap样式  
             datatype: "json",  
-            colNames: ['ID', '分类', '标题', '内容', '时长', '价格', '购买数', '状态', '创建时间', '操作'],
+            colNames: ['ID', '封面', '标题', '分类', '内容', '时长', '价格', '购买数', '状态', '创建时间', '操作'],
             colModel: [  
                 { name: 'videoId', index: 'videoId', width: 20, sortable: false, hidden: true },
-                { name: 'categoryName', index: 'categoryName', width: 15, sortable: false },
-                { name: 'videoTitle', index: 'videoTitle', width: 45, sortable: false },
-                { name: 'videoPath', index: 'videoPath', width: 15, sortable: false,
+                { name: 'thumbUrl', index: 'thumbUrl', width: 11, sortable: false, hidden: true,
+                    formatter:function(cellvalue, options, rowObject) {
+                        var src = apiServer + cellvalue;
+                        return "<img src='" + src + "' alt='当前视频封面' style='width: 100%; height: auto; max-width: 100px; max-height: 100px; object-fit: contain;' />";
+                    }
+                },
+                { name: 'videoTitle', index: 'videoTitle', width: 43, sortable: false },
+                { name: 'categoryName', index: 'categoryName', width: 12, sortable: false },
+                { name: 'videoPath', index: 'videoPath', width: 8, sortable: false,
                     formatter:function(cellvalue, options, rowObject) {
                         var src = apiServer + cellvalue;
                         // var display = "<a href='" + src + "' target='_blank'>点我播放</a>";
@@ -92,17 +98,17 @@ var VideoList = function () {
                         return display;
                     }
                 },
-                { name: 'duration', index: 'duration', width: 15, sortable: false },
-                { name: 'price', index: 'price', width: 10, sortable: false },
-                { name: 'salesCounts', index: 'salesCounts', width: 10, sortable: false },
-                { name: 'status', index: 'status', width: 10, sortable: false, hidden: false,
+                { name: 'duration', index: 'duration', width: 10, sortable: false },
+                { name: 'price', index: 'price', width: 6, sortable: false },
+                { name: 'salesCounts', index: 'salesCounts', width: 6, sortable: false },
+                { name: 'status', index: 'status', width: 6, sortable: false, hidden: false,
                 	formatter:function(cellvalue, options, rowObject) {
                         var color = cellvalue === 2 ? 'green' : 'red';
                         var text = cellvalue === 2 ? '正常' : '禁播';
                         return '<span style="color: ' + color + ';">' + text + '</span>';
 			    	}
 			    },
-                { name: 'createTime', index: 'createTime', width: 20, sortable: false, hidden: false,
+                { name: 'createTime', index: 'createTime', width: 18, sortable: false, hidden: false,
                 	formatter:function(cellvalue, options, rowObject) {
 			    		return Common.formatTime(cellvalue,'yyyy-MM-dd HH:mm:ss');
 			    	}

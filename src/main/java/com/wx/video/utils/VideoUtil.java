@@ -53,65 +53,17 @@ public final class VideoUtil {
 //        return duration;
 //    }
 
-    public static String getVideoDuration(MultipartFile file) {
-        String duration = null;
-        File tempFile = null;
-        try {
-            // 将MultipartFile保存为临时文件
-            tempFile = File.createTempFile("temp", file.getOriginalFilename());
-            file.transferTo(tempFile);
-
-            // 创建FFmpeg命令
-            ProcessBuilder processBuilder = new ProcessBuilder(FFMPEG_PATH, "-i", tempFile.getAbsolutePath());
-            processBuilder.redirectErrorStream(true); // Merge stderr into stdout
-            Process process = processBuilder.start();
-
-            // 读取FFmpeg的输出
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            Pattern pattern = Pattern.compile("Duration: (\\d{2}):(\\d{2}):(\\d{2})");
-
-            while ((line = reader.readLine()) != null) {
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
-                    duration = matcher.group(1) + ":" + matcher.group(2) + ":" + matcher.group(3);
-                    break;
-                }
-            }
-
-            process.waitFor();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null; // 转换失败时返回null
-        } finally {
-            // 删除临时文件
-            if (tempFile != null && tempFile.exists()) {
-                tempFile.delete();
-            }
-        }
-        return duration;
-    }
-
-//    /**
-//     * 获取视频时长
-//     *
-//     * @param file
-//     * @return
-//     */
-//    public static Map<String, String> getVideoDuration(MultipartFile file) throws Exception {
-//        Map<String, String> returnMap = new HashMap<String, String>();
+//    public static String getVideoDuration(MultipartFile file) {
+//        String duration = null;
 //        File tempFile = null;
-//        String outputImagePath = String.format("%s.jpg", id);
 //        try {
 //            // 将MultipartFile保存为临时文件
 //            tempFile = File.createTempFile("temp", file.getOriginalFilename());
 //            file.transferTo(tempFile);
 //
-//            // 创建FFmpeg命令以获取视频信息和提取封面
-//            ProcessBuilder processBuilder = new ProcessBuilder(
-//                    FFMPEG_PATH, "-i", tempFile.getAbsolutePath(), "-ss", "00:00:01", "-vframes", "1", outputImagePath
-//            );
-//            processBuilder.redirectErrorStream(true); // 合并stderr到stdout
+//            // 创建FFmpeg命令
+//            ProcessBuilder processBuilder = new ProcessBuilder(FFMPEG_PATH, "-i", tempFile.getAbsolutePath());
+//            processBuilder.redirectErrorStream(true); // Merge stderr into stdout
 //            Process process = processBuilder.start();
 //
 //            // 读取FFmpeg的输出
@@ -122,34 +74,89 @@ public final class VideoUtil {
 //            while ((line = reader.readLine()) != null) {
 //                Matcher matcher = pattern.matcher(line);
 //                if (matcher.find()) {
-//                    String duration = matcher.group(1) + ":" + matcher.group(2) + ":" + matcher.group(3);
-//                    returnMap.put("duration", duration);
+//                    duration = matcher.group(1) + ":" + matcher.group(2) + ":" + matcher.group(3);
 //                    break;
 //                }
 //            }
 //
-//            int exitCode = process.waitFor();
-//            if (exitCode != 0) {
-//                throw new Exception("Failed to process video");
-//            }
-//
-//            File outputFile = new File(outputImagePath);
-//            if (!outputFile.exists()) {
-//                throw new Exception("Failed to extract video cover");
-//            }
-//
-//            returnMap.put("outputImagePath", outputImagePath);
-//
+//            process.waitFor();
 //        } catch (Exception e) {
-//            throw e;
+//            e.printStackTrace();
+//            return null; // 转换失败时返回null
 //        } finally {
 //            // 删除临时文件
 //            if (tempFile != null && tempFile.exists()) {
 //                tempFile.delete();
 //            }
 //        }
-//        return returnMap;
+//        return duration;
 //    }
+
+    /**
+     * 获取视频时长和封面
+     *
+     * @param file MultipartFile
+     * @param id 视频id
+     * @return map
+     */
+    public static Map<String, String> getVideoDurationAndCover(MultipartFile file, String id) throws Exception {
+        Map<String, String> returnMap = new HashMap<String, String>();
+        File tempFile = null;
+        try {
+            // 封面图片路径
+            File tempDir = new File(System.getProperty("java.io.tmpdir"));
+            String imageName = String.format("%s.jpg", id);
+            File thumbnailFile = new File(tempDir, imageName);
+            String outputImagePath = thumbnailFile.getAbsolutePath();
+
+            // 将MultipartFile保存为临时文件
+            tempFile = File.createTempFile("temp", file.getOriginalFilename());
+            file.transferTo(tempFile);
+
+            // 创建FFmpeg命令以获取视频信息和提取封面
+            ProcessBuilder processBuilder = new ProcessBuilder(
+                    FFMPEG_PATH, "-i", tempFile.getAbsolutePath(), "-ss", "00:00:01", "-vframes", "1", outputImagePath
+            );
+            processBuilder.redirectErrorStream(true); // 合并stderr到stdout
+            Process process = processBuilder.start();
+
+            // 读取FFmpeg的输出
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            Pattern pattern = Pattern.compile("Duration: (\\d{2}):(\\d{2}):(\\d{2})");
+
+            while ((line = reader.readLine()) != null) {
+                Matcher matcher = pattern.matcher(line);
+                if (matcher.find()) {
+                    String duration = matcher.group(1) + ":" + matcher.group(2) + ":" + matcher.group(3);
+                    returnMap.put("duration", duration);
+                    break;
+                }
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                throw new Exception("Failed to process video");
+            }
+
+            // 生成视频封面图片
+            File outputFile = new File(outputImagePath);
+            if (!outputFile.exists()) {
+                throw new Exception("Failed to extract video cover");
+            }
+            returnMap.put("imageName", imageName);
+            returnMap.put("outputImagePath", outputImagePath);
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            // 删除临时文件
+            if (tempFile != null && tempFile.exists()) {
+                tempFile.delete();
+            }
+        }
+        return returnMap;
+    }
 
 //    /**
 //     *
@@ -193,11 +200,10 @@ public final class VideoUtil {
     }
 
 
-
 //    public static void main(String[] args) {
 //        String filePath = "D:/AwesomeVideoUpload/video/2.mp4";
 //        try {
-//            String duration = getVideoDuration(filePath);
+//            String duration = getVideoDurationAndCover(filePath, "ksksks1111");
 //            if (duration != null) {
 //                System.out.println("Duration: " + duration);
 //            } else {

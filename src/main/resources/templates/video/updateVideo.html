@@ -38,7 +38,7 @@
                                 <div class="col-md-4">
                                     <div class="video-cover-container">
                                         <div class="video-cover">
-                                            <img th:src="@{/static/pages/img/course/zookeeper.jpg}" alt="当前视频封面" class="img-fluid" />
+                                            <img th:src="${video.thumbUrl}" alt="当前视频封面" class="img-fluid" />
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -206,16 +206,16 @@
     }
     .video-cover {
         margin-bottom: 20px;
-        width: 170px; /* 固定宽度 */
-        height: 170px; /* 固定高度 */
-        border: 2px solid #ddd;
+        width: 60%; /* 固定宽度 */
+        height: 60%; /* 固定高度 */
+        border: 1px solid #ddd;
         overflow: hidden;
         position: relative; /* 使子元素能够定位 */
     }
     .video-cover img {
         width: 100%; /* 宽度充满容器 */
         height: 100%; /* 高度充满容器 */
-        object-fit: cover; /* 保持图片比例，充满容器 */
+        object-fit: contain; /* 保持图片比例，充满容器 */
         display: block; /* 去除底部空白 */
     }
     .form-group .short-input {
