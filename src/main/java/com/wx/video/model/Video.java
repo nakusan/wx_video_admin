@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -23,7 +22,7 @@ public class Video implements Serializable {
     private String duration;
     private Integer salesCounts;
     private Integer categoryId;
-    private BigDecimal price;
+    private Integer price;
     private Integer status;
     private Integer isDelete;
     private Date createTime;

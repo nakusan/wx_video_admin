@@ -3,16 +3,14 @@ package com.wx.video.controller;
 import com.wx.video.enums.VideoStatusEnum;
 import com.wx.video.model.Category;
 import com.wx.video.model.Video;
+import com.wx.video.model.vo.Result;
 import com.wx.video.service.VideoService;
-import com.wx.video.utils.JsonResult;
 import com.wx.video.utils.PagedResult;
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -52,9 +50,9 @@ public class VideoController {
      */
     @PostMapping("/deleteVideo")
     @ResponseBody
-    public JsonResult deleteVideo(String videoId) {
+    public Result deleteVideo(String videoId) {
         videoService.delVideo(videoId);
-        return JsonResult.ok();
+        return Result.ok();
     }
 
     /**
@@ -63,8 +61,8 @@ public class VideoController {
      */
     @PostMapping("/updateVideo")
     @ResponseBody
-    public JsonResult updateVideo(@RequestParam String videoId,
-                                  BigDecimal price,
+    public Result updateVideo(@RequestParam String videoId,
+                                  Integer price,
                                   String videoTitle,
                                   String videoCategory,
                                   String videoDesc) {
@@ -76,7 +74,7 @@ public class VideoController {
         video.setVideoDesc(videoDesc);
         video.setUpdateTime(new Date());
         videoService.updateVideo(video);
-        return JsonResult.ok();
+        return Result.ok();
     }
 
     /**
@@ -86,10 +84,10 @@ public class VideoController {
      */
     @PostMapping("/toggleStatus")
     @ResponseBody
-    public JsonResult toggleStatus(String videoId, Integer videoStatus) {
+    public Result toggleStatus(String videoId, Integer videoStatus) {
         Integer status = videoStatus == 1 ? VideoStatusEnum.SUCCESS.getValue() : VideoStatusEnum.FORBID.getValue();
         videoService.updateVideoStatus(videoId, status);
-        return JsonResult.ok();
+        return Result.ok();
     }
 
     /**
@@ -114,9 +112,9 @@ public class VideoController {
 
     @GetMapping("/categories")
     @ResponseBody
-    public JsonResult getCategories() {
+    public Result getCategories() {
         List<Category> categories = videoService.getAllCategories();
-        return JsonResult.ok(categories);
+        return Result.ok(categories);
     }
 
 }

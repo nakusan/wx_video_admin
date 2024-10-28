@@ -1,4 +1,4 @@
-package com.wx.video.utils;
+package com.wx.video.model.vo;
 
 /**
  * @description: 自定义响应数据结构
@@ -10,7 +10,7 @@ package com.wx.video.utils;
  * 				502：拦截器拦截到用户token出错
  * 				555：异常抛出信息
  */
-public class JsonResult {
+public class Result {
 
     // 响应业务状态
     private Integer status;
@@ -24,45 +24,45 @@ public class JsonResult {
     // 响应成功
     private String ok;
 
-    public static JsonResult build(Integer status, String msg, Object data) {
-        return new JsonResult(status, msg, data);
+    public static Result build(Integer status, String msg, Object data) {
+        return new Result(status, msg, data);
     }
 
-    public static JsonResult ok(Object data) {
-        return new JsonResult(data);
+    public static Result ok(Object data) {
+        return new Result(data);
     }
 
-    public static JsonResult ok() {
-        return new JsonResult(null);
+    public static Result ok() {
+        return new Result(null);
     }
     
-    public static JsonResult errorMsg(String msg) {
-        return new JsonResult(500, msg, null);
+    public static Result errorMsg(String msg) {
+        return new Result(500, msg, null);
     }
     
-    public static JsonResult errorMap(Object data) {
-        return new JsonResult(501, "error", data);
+    public static Result errorMap(Object data) {
+        return new Result(501, "error", data);
     }
     
-    public static JsonResult errorTokenMsg(String msg) {
-        return new JsonResult(502, msg, null);
+    public static Result errorTokenMsg(String msg) {
+        return new Result(502, msg, null);
     }
     
-    public static JsonResult errorException(String msg) {
-        return new JsonResult(555, msg, null);
+    public static Result errorException(String msg) {
+        return new Result(555, msg, null);
     }
 
-    public JsonResult() {
+    public Result() {
 
     }
 
-    public JsonResult(Integer status, String msg, Object data) {
+    public Result(Integer status, String msg, Object data) {
         this.status = status;
         this.msg = msg;
         this.data = data;
     }
 
-    public JsonResult(Object data) {
+    public Result(Object data) {
         this.status = 200;
         this.msg = "OK";
         this.data = data;

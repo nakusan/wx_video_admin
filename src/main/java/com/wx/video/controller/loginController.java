@@ -1,7 +1,7 @@
 package com.wx.video.controller;
 
+import com.wx.video.model.vo.Result;
 import com.wx.video.utils.AdminUser;
-import com.wx.video.utils.JsonResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,20 +39,20 @@ public class loginController {
      */
     @PostMapping("/login")
     @ResponseBody
-    public JsonResult userLogin(String username, String password,
+    public Result userLogin(String username, String password,
                                 HttpServletRequest request, HttpServletResponse response) {
         if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
-            return JsonResult.errorMsg("用户名和密码不能为空");
+            return Result.errorMsg("用户名和密码不能为空");
         }
         if (!"admin".equals(username) || !"123456".equals(password)) {
-            return JsonResult.errorMsg("用户名或密码错误");
+            return Result.errorMsg("用户名或密码错误");
         }
 
         // 创建管理员用户信息，并存入session
         String token = UUID.randomUUID().toString();
         AdminUser user = new AdminUser(username, password, token);
         request.getSession().setAttribute("sessionUser", user);
-        return JsonResult.ok();
+        return Result.ok();
     }
 
     /**

@@ -1,13 +1,16 @@
 package com.wx.video.service.impl;
 
+import com.wx.video.config.WxConfig;
 import com.wx.video.service.JwtService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,8 +21,8 @@ public class JwtServiceImpl implements JwtService {
 
     private static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000 * 3; // 3 天（单位为毫秒）
 
-    @Value("${wx.appSecret}")
-    String appSecret;
+    @Resource
+    WxConfig wxConfig;
 
     // 生成 JWT
     @Override
@@ -35,7 +38,7 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(claims)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, appSecret)
+                .signWith(SignatureAlgorithm.HS256, wxConfig.getAppSecret())
                 // 将构建好的JWT紧凑化后返回
                 .compact();
     }
@@ -44,7 +47,7 @@ public class JwtServiceImpl implements JwtService {
     public String getOpenidFromToken(String token) {
         // 解析JWT令牌，验证其完整性和有效性
         Claims claims = Jwts.parser()
-                .setSigningKey(appSecret)  // 设置用于验证签名的密钥
+                .setSigningKey(wxConfig.getAppSecret())  // 设置用于验证签名的密钥
                 .parseClaimsJws(token)      // 解析令牌并验证其签名
                 .getBody();                 // 获取令牌主体部分的声明
         // 从声明中获取名为"openid"的值，并指定其类型为字符串
@@ -56,7 +59,7 @@ public class JwtServiceImpl implements JwtService {
     public boolean isTokenExpired(String token) {
         // 解析 token 并获取其主体部分
         Claims claims = Jwts.parser()
-                .setSigningKey(appSecret)
+                .setSigningKey(wxConfig.getAppSecret())
                 .parseClaimsJws(token)
                 .getBody();
         // 比较 token 的过期时间与当前时间，判断 token 是否过期
