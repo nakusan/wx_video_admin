@@ -4,7 +4,6 @@ var deleteVideo = function (videoId) {
     if (!flag) {
         return;
     }
-
     $.ajax({
         url: $("#hdnContextPath").val() + "/management/deleteVideo?videoId=" + videoId,
         type: "POST",
@@ -12,20 +11,45 @@ var deleteVideo = function (videoId) {
         success: function (data) {
             if (data.status === 200 && data.msg === "OK") {
                 alert("操作成功");
-                var jqGrid = $("#videoList");
+                const jqGrid = $("#videoList");
                 jqGrid.jqGrid().trigger("reloadGrid");
             } else {
                 console.log(JSON.stringify(data));
             }
+        },
+        error: function (response, ajaxOptions, thrownError) {
+            Error.displayError(response, ajaxOptions, thrownError);
         }
     })
 };
 
-var updateVideo = function (videoId) {
+var showVideo = function (videoId) {
     // 构建更新页面的 URL
-    var updateUrl = $("#hdnContextPath").val() + "/management/showUpdateVideo?videoId=" + videoId;
-    $("#updateVideoShow").attr("href", updateUrl);
-    $("#updateVideoShow").click();
+    const showUrl = $("#hdnContextPath").val() + "/management/showUpdateVideo?videoId=" + videoId;
+    $.ajax({
+        url: showUrl,
+        type: "GET",
+        success: function (response) {
+            console.info("Response:", response)
+            if (response) {
+                // 解析返回的 JSON 数据
+                const video = response.data;
+                // 将数据赋值到模态对话框中的输入字段
+                $("#videoId").val(video.videoId);
+                $("#videoTitle").val(video.videoTitle);
+                $("#categoryId").val(video.categoryId);
+                $("#videoDesc").val(video.videoDesc);
+                $("#price").val(video.priceYuan);
+                // 显示模态对话框
+                $("#editVideoModal").modal('show');
+            } else {
+                console.error("Video not found");
+            }
+        },
+        error: function (response, ajaxOptions, thrownError) {
+            Error.displayError(response, ajaxOptions, thrownError);
+        }
+    });
 };
 
 var toggleStatus = function (videoId, targetStatus) {
@@ -33,14 +57,17 @@ var toggleStatus = function (videoId, targetStatus) {
         url: $("#hdnContextPath").val() + "/management/toggleStatus?videoId=" + videoId + "&videoStatus=" + targetStatus,
         type: 'POST',
         async: false,
-        success: function(data) {
+        success: function (data) {
             if (data.status === 200 && data.msg === "OK") {
                 // 刷新表格数据
-                var jqGrid = $("#videoList");
+                const jqGrid = $("#videoList");
                 jqGrid.jqGrid().trigger("reloadGrid");
             } else {
                 console.log(JSON.stringify(data));
             }
+        },
+        error: function (response, ajaxOptions, thrownError) {
+            Error.displayError(response, ajaxOptions, thrownError);
         }
     });
 }
@@ -67,53 +94,53 @@ function playVideo(videoUrl) {
 
 // 定义视频列表对象
 var VideoList = function () {
-    // 举报列表
-	var handleUsersReportsList = function() {
-		// 上下文对象路径
-		var hdnContextPath = $("#hdnContextPath").val();
-		var apiServer = $("#apiServer").val();
-		var jqGrid = $("#videoList");  
-        jqGrid.jqGrid({  
+    // 视频列表
+    var handleVideoReportsList = function () {
+        // 上下文对象路径
+        var hdnContextPath = $("#hdnContextPath").val();
+        var apiServer = $("#apiServer").val();
+        var jqGrid = $("#videoList");
+        jqGrid.jqGrid({
             caption: "视频列表",
             url: hdnContextPath + "/management/videoList",
-            mtype: "post",  
+            mtype: "post",
             styleUI: 'Bootstrap',//设置jqgrid的全局样式为bootstrap样式  
-            datatype: "json",  
-            colNames: ['ID', '封面', '标题', '分类', '内容', '时长', '价格', '购买数', '状态', '创建时间', '操作'],
-            colModel: [  
-                { name: 'videoId', index: 'videoId', width: 20, sortable: false, hidden: true },
-                { name: 'thumbUrl', index: 'thumbUrl', width: 11, sortable: false, hidden: true,
-                    formatter:function(cellvalue, options, rowObject) {
-                        var src = apiServer + cellvalue;
-                        return "<img src='" + src + "' alt='当前视频封面' style='width: 100%; height: auto; max-width: 100px; max-height: 100px; object-fit: contain;' />";
+            datatype: "json",
+            colNames: ['ID', '标题', '分类', '内容', '时长', '价格', '购买数', '状态', '创建时间', '操作'],
+            colModel: [
+                {name: 'videoId', index: 'videoId', width: 20, sortable: false, hidden: true},
+                {name: 'videoTitle', index: 'videoTitle', width: 40, sortable: false},
+                {name: 'categoryName', index: 'categoryName', width: 15, sortable: false},
+                {
+                    name: 'content', index: 'content', width: 14, sortable: false,
+                    formatter: function (cellvalue, options, rowObject) {
+                        const thumbSrc = apiServer + rowObject.thumbUrl;
+                        const videoSrc = apiServer + rowObject.videoPath;
+                        // 构造封面图片HTML
+                        return "<img src='" + thumbSrc + "' alt='当前视频封面' " +
+                            "style='width: 100%; height: auto; max-width: 100px; max-height: 100px; object-fit: contain; cursor: pointer;' " +
+                            "onclick='playVideo(\"" + videoSrc + "\")' />";
                     }
                 },
-                { name: 'videoTitle', index: 'videoTitle', width: 43, sortable: false },
-                { name: 'categoryName', index: 'categoryName', width: 12, sortable: false },
-                { name: 'videoPath', index: 'videoPath', width: 8, sortable: false,
-                    formatter:function(cellvalue, options, rowObject) {
-                        var src = apiServer + cellvalue;
-                        // var display = "<a href='" + src + "' target='_blank'>点我播放</a>";
-                        var display = "<a href='javascript:void(0);' onclick='playVideo(\"" + src + "\")'>点我播放</a>";
-                        return display;
-                    }
-                },
-                { name: 'duration', index: 'duration', width: 10, sortable: false },
-                { name: 'price', index: 'price', width: 6, sortable: false },
-                { name: 'salesCounts', index: 'salesCounts', width: 6, sortable: false },
-                { name: 'status', index: 'status', width: 6, sortable: false, hidden: false,
-                	formatter:function(cellvalue, options, rowObject) {
-                        var color = cellvalue === 2 ? 'green' : 'red';
-                        var text = cellvalue === 2 ? '正常' : '禁播';
+                {name: 'duration', index: 'duration', width: 10, sortable: false},
+                {name: 'priceYuan', index: 'priceYuan', width: 8, sortable: false},
+                {name: 'salesCounts', index: 'salesCounts', width: 6, sortable: false},
+                {
+                    name: 'status', index: 'status', width: 6, sortable: false, hidden: false,
+                    formatter: function (cellvalue, options, rowObject) {
+                        const color = cellvalue === 2 ? 'green' : 'red';
+                        const text = cellvalue === 2 ? '正常' : '禁播';
                         return '<span style="color: ' + color + ';">' + text + '</span>';
-			    	}
-			    },
-                { name: 'createTime', index: 'createTime', width: 18, sortable: false, hidden: false,
-                	formatter:function(cellvalue, options, rowObject) {
-			    		return Common.formatTime(cellvalue,'yyyy-MM-dd HH:mm:ss');
-			    	}
-			    },
-                { name: '', index: '', width: 25,
+                    }
+                },
+                {
+                    name: 'createTime', index: 'createTime', width: 18, sortable: false, hidden: false,
+                    formatter: function (cellvalue, options, rowObject) {
+                        return Common.formatTime(cellvalue, 'yyyy-MM-dd HH:mm:ss');
+                    }
+                },
+                {
+                    name: '', index: '', width: 20,
                     formatter: function (cellvalue, option, rowObject) {
                         var html = '';
                         if (rowObject.status === 2) {
@@ -121,12 +148,12 @@ var VideoList = function () {
                         } else {
                             html += '<button class="btn btn-success" onclick=toggleStatus("' + rowObject.videoId + '",1) style="padding: 1px 3px 1px 3px;">发布</button>&nbsp;&nbsp;';
                         }
-                        html += '<button class="btn btn-outline blue-sharp" id="" onclick=updateVideo("' + rowObject.videoId + '") style="padding: 1px 3px 1px 3px;">编辑</button>&nbsp;&nbsp;';
+                        html += '<button class="btn btn-outline blue-sharp" id="" onclick=showVideo("' + rowObject.videoId + '") style="padding: 1px 3px 1px 3px;">编辑</button>&nbsp;&nbsp;';
                         html += '<button class="btn btn-outline yellow-gold" id="" onclick=deleteVideo("' + rowObject.videoId + '") style="padding: 1px 3px 1px 3px;">删除</button>';
                         return html;
                     }
                 }
-            ],  
+            ],
             viewrecords: true,  		// 定义是否要显示总记录数
             rowNum: 10,					// 在grid上显示记录条数，这个参数是要被传递到后台
             rownumbers: true,  			// 如果为ture则会在表格左边新增一列，显示行顺序号，从1开始递增。此列名为'rn'
@@ -143,24 +170,66 @@ var VideoList = function () {
         });
 
         // 随着窗口的变化，设置jqgrid的宽度  
-        $(window).bind('resize', function () {  
-            var width = $('.videoList_wrapper').width() * 0.99;  
-            jqGrid.setGridWidth(width);  
-        });  
-        
+        $(window).bind('resize', function () {
+            const width = $('.videoList_wrapper').width() * 0.99;
+            jqGrid.setGridWidth(width);
+        });
+
         // 不显示水平滚动条
-        // jqGrid.closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+        jqGrid.closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+
+        // 条件查询所有用户列表
+        $("#searchVideoListButton").click(function () {
+            var searchVideoListForm = $("#searchVideoListForm");
+            jqGrid.jqGrid().setGridParam({
+                page: 1,
+                url: hdnContextPath + "/management/videoList?" + searchVideoListForm.serialize()
+            }).trigger("reloadGrid");
+        });
     };
-    
+
+    var handleCategoriesList = function () {
+        // 通过 AJAX 请求获取分类数据
+        $.ajax({
+            url: '/management/categories',
+            method: 'GET',
+            success: function (event) {
+                const selectVideoCategory = $("#selectVideoCategory");
+                // 清空现有选项
+                selectVideoCategory.empty();
+
+                // 添加默认的空白选项
+                const defaultOption = $("<option>", {
+                    value: "",
+                    text: "未选择分类"
+                });
+                selectVideoCategory.append(defaultOption);
+
+                const objs = event.data;
+                objs.forEach(obj => {
+                    const option = $("<option>", {
+                        value: obj.categoryId,
+                        text: obj.categoryName
+                    });
+                    selectVideoCategory.append(option);
+                });
+            },
+            error: function (error) {
+                console.error('Error fetching categories:', error);
+            }
+        });
+    }
+
     return {
         // 初始化各个函数及对象
         init: function () {
-        	handleUsersReportsList();
+            handleVideoReportsList();
+            handleCategoriesList();
         }
     };
 }();
 
 
-jQuery(document).ready(function() {
-	VideoList.init();
+jQuery(document).ready(function () {
+    VideoList.init();
 });

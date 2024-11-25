@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Error Message Fragment</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .error {
+            color: red;
+            font-weight: bold;
+            display: none; /* 默认隐藏 */
+        }
+    </style>
+</head>
+<body>
+<div id="errorMessageDiv" th:if="${result?.status != 200}" class="error">
+    <p th:text="${result?.msg}">默认错误信息</p>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var errorMessageDiv = $('#errorMessageDiv');
+
+        if (errorMessageDiv.length) { // 检查是否有错误信息
+            errorMessageDiv.fadeIn(500); // 错误信息淡入，持续时间为500毫秒
+
+            // 设置一个定时器，在几秒钟后让错误信息淡出并最终隐藏
+            setTimeout(function () {
+                errorMessageDiv.fadeOut(500, function () {
+                    $(this).remove(); // 完全移除元素
+                });
+            }, 5000); // 5000毫秒后执行淡出操作
+        }
+    });
+</script>
+</body>
+</html>

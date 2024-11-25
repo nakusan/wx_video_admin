@@ -2,6 +2,7 @@ package com.wx.video.service;
 
 import com.wx.video.model.Category;
 import com.wx.video.model.Video;
+import com.wx.video.model.vo.VideoQueryVO;
 import com.wx.video.utils.PagedResult;
 
 import java.util.List;
@@ -25,11 +26,12 @@ public interface VideoService {
 
     /**
      * 分页查询视频列表
+     * @param queryVO 查询条件
      * @param page 当前页数
      * @param pageSize 每页条数
      * @return 分页结果
      */
-    PagedResult queryVideoList(Integer page, Integer pageSize);
+    PagedResult queryVideoList(VideoQueryVO queryVO, Integer page, Integer pageSize);
 
     /**
      * 删除视频

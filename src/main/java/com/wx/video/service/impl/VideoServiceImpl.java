@@ -6,6 +6,7 @@ import com.wx.video.mapper.CategoryMapper;
 import com.wx.video.mapper.VideoMapper;
 import com.wx.video.model.Category;
 import com.wx.video.model.Video;
+import com.wx.video.model.vo.VideoQueryVO;
 import com.wx.video.model.vo.VideoVO;
 import com.wx.video.service.VideoService;
 import com.wx.video.utils.PagedResult;
@@ -15,7 +16,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @description 视频服务实现
@@ -72,18 +75,26 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
 //    @Cacheable(key = "methodName + #p0 + #p1")
-    public PagedResult queryVideoList(Integer page, Integer pageSize) {
+    public PagedResult queryVideoList(VideoQueryVO queryVO, Integer page, Integer pageSize) {
         // 计算偏移量
         int offset = (page - 1) * pageSize;
         // 查询分页数据
-        List<VideoVO> videoList = videoMapper.queryAllVideos(VideoStatusEnum.ACTIVE.getValue(), offset, pageSize);
+        List<VideoVO> videoList = videoMapper.queryAllVideos(queryVO, offset, pageSize);
+        // 格式化价格
+        List<VideoVO> formattedVideoList = videoList.stream()
+                .peek(video -> {
+                    if (video.getPrice() != null) {
+                        BigDecimal priceInYuan = new BigDecimal(video.getPrice()).divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP);
+                        video.setPriceYuan(priceInYuan.toString());
+                    }
+                }).collect(Collectors.toList());
         // 查询总记录数
-        int totalRecords = videoMapper.countAllVideos(VideoStatusEnum.ACTIVE.getValue());
+        int totalRecords = videoMapper.countAllVideos();
 
         // 创建自定义分页结果
         PagedResult pagedResult = new PagedResult();
         pagedResult.setTotal(totalRecords / pageSize + (totalRecords % pageSize > 0 ? 1 : 0)); // 总页数
-        pagedResult.setRows(videoList); // 当前页的数据
+        pagedResult.setRows(formattedVideoList); // 当前页的数据
         pagedResult.setRecords(totalRecords); // 总记录数
         pagedResult.setPage(page); // 当前页数
         return pagedResult;

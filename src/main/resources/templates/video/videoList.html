@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <body>
 
 <div th:fragment="reportList">
+    <script th:src="@{/static/pages/js/ajaxCallbackError.js}"></script>
+    <script th:src="@{/static/pages/js/updateVideo.js}"></script>
     <script th:src="@{/static/pages/js/videoList.js}"></script>
 
     <!-- BEGIN PAGE HEADER-->
@@ -26,26 +29,118 @@
     <!-- END PAGE HEADER-->
     <!-- 模态框结构 -->
     <div class="modal fade" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="videoModalLabel" aria-hidden="true">
-        <div class="modal-header">
-            <h5 class="modal-title" id="videoModalLabel">视频播放</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="false">&times;</span>
-            </button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <video id="videoPlayer" width="100%" controls>
+                    <source id="videoSource" src="" type="video/mp4">
+                    您的浏览器不支持HTML5视频播放。
+                </video>
+            </div>
         </div>
-        <div class="modal-body">
-            <video id="videoPlayer" width="100%" controls>
-                <source id="videoSource" src="" type="video/mp4">
-                您的浏览器不支持HTML5视频播放。
-            </video>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="editVideoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="portlet box blue-sharp">
+                            <div class="portlet-title">
+                                <div class="caption">
+                                    <i class="icon-plus"></i>视频信息编辑
+                                </div>
+                            </div>
+                            <div class="portlet-body form">
+                                <form id="updateVideoForm" class="form-horizontal">
+                                    <input type="hidden" id="videoId" name="videoId"/>
+                                    <div class="form-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-2">视频名称：</label>
+                                                    <div class="col-md-10">
+                                                        <div id="input-error">
+                                                            <input id="videoTitle" name="videoTitle" type="text" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-2">视频分类：</label>
+                                                    <div class="col-md-10">
+                                                        <input type="hidden" id="categoryId" />
+                                                        <select id="videoCategory" name="videoCategory" class="form-control short-input">
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-2">视频简介：</label>
+                                                    <div class="col-md-10">
+                                                        <div id="input-error">
+                                                            <textarea id="videoDesc" name="videoDesc" rows="8" class="form-control"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-2">价格（元）：</label>
+                                                    <div class="col-md-10">
+                                                        <div id="input-error">
+                                                            <input id="price" name="price" type="text" class="form-control short-input" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input id="submit" type="submit" class="btn blue-sharp" value="保 存" />
+                                                <input id="reset" type="reset" class="btn btn-outline grey-salsa" value="重 置" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- 列表 jqgrid start -->
     <div class="row">
 
+        <!-- 搜索内容 -->
         <div class="col-md-12">
             <br/>
+            <form id="searchVideoListForm" class="form-inline" method="post" role="form">
+                <div class="form-group">
+                    <label class="sr-only" for="selectVideoTitle">标题:</label>
+                    <input id="selectVideoTitle" name="selectVideoTitle" type="text" class="form-control" placeholder="标题" />
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="selectVideoCategory">分类:</label>
+                    <select id="selectVideoCategory" name="selectVideoCategory" class="form-control">
+                    </select>
+                </div>
+                <button id="searchVideoListButton" class="btn yellow-casablanca" type="button">搜    索</button>
+            </form>
+        </div>
 
+        <div class="col-md-12">
+            <br/>
             <div class="videoList_wrapper">
                 <table id="videoList"></table>
                 <div id="videoListPager"></div>
@@ -57,4 +152,43 @@
 </div>
 
 </body>
+<style>
+    /* 自定义模态对话框的样式 */
+    .modal {
+        width: 800px; /* 设置最大宽度 */
+    }
+    .modal-content {
+        border-radius: 20px; /* 圆角 */
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* 阴影效果 */
+    }
+    .modal-header {
+        background-color: rgba(221, 223, 232, 0.73); /* 头部背景色 */
+        height: 4px;
+        border-bottom: 2px solid #dee2e6; /* 头部边框 */
+    }
+    .modal-body {
+        padding: 5px; /* 内边距 */
+    }
+
+    .form-group .short-input {
+        max-width: 180px; /* 缩短输入框的宽度 */
+    }
+    .form-group .col-md-10 {
+        max-width: 550px; /* 限制输入框的最大宽度 */
+        text-align: left;
+    }
+    .form-group .col-md-2 {
+        text-align: right;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .control-label {
+        text-align: right; /* 右对齐 */
+        padding-top: 7px; /* 与输入框对齐 */
+    }
+    .form-actions .btn {
+        margin-right: 10px;
+    }
+</style>
 </html>

@@ -21,8 +21,14 @@
         FROM videos v
         LEFT JOIN category c
         ON v.category_id = c.category_id
-        WHERE v.is_delete = #{isDelete}
-        ORDER BY v.id ASC
+        WHERE v.is_delete = 0
+        <if test="query.selectVideoTitle != null and query.selectVideoTitle != ''">
+            AND v.video_title LIKE CONCAT('%',#{query.selectVideoTitle},'%')
+        </if>
+        <if test="query.selectVideoCategory != null and query.selectVideoCategory != ''">
+            AND v.category_id = #{query.selectVideoCategory}
+        </if>
+        ORDER BY v.create_time DESC
         LIMIT #{offset}, #{limit}
     </select>
 
@@ -30,7 +36,7 @@
     <select id="countAllVideos" resultType="int">
         SELECT COUNT(*)
         FROM videos
-        WHERE is_delete = #{isDelete}
+        WHERE is_delete = 0
     </select>
 
 </mapper>

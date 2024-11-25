@@ -4,13 +4,18 @@ import com.wx.video.enums.VideoStatusEnum;
 import com.wx.video.model.Category;
 import com.wx.video.model.Video;
 import com.wx.video.model.vo.Result;
+import com.wx.video.model.vo.VideoQueryVO;
+import com.wx.video.model.vo.VideoVO;
 import com.wx.video.service.VideoService;
 import com.wx.video.utils.PagedResult;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -40,8 +45,8 @@ public class VideoController {
      */
     @PostMapping("/videoList")
     @ResponseBody
-    public PagedResult videoList(Integer page) {
-        return videoService.queryVideoList(page, 10);
+    public PagedResult videoList(VideoQueryVO queryVO, Integer page) {
+        return videoService.queryVideoList(queryVO, page, 10);
     }
 
     /**
@@ -62,13 +67,18 @@ public class VideoController {
     @PostMapping("/updateVideo")
     @ResponseBody
     public Result updateVideo(@RequestParam String videoId,
-                                  Integer price,
+                                  String price,
                                   String videoTitle,
                                   String videoCategory,
                                   String videoDesc) {
         Video video = new Video();
         video.setVideoId(videoId);
-        video.setPrice(price);
+        if (StringUtils.isNotBlank(price)) {
+            BigDecimal priceInCents = new BigDecimal(price)
+                    .multiply(BigDecimal.valueOf(100))
+                    .setScale(0, BigDecimal.ROUND_HALF_UP);
+            video.setPrice(priceInCents.intValue());
+        }
         video.setVideoTitle(videoTitle);
         video.setCategoryId(Integer.parseInt(videoCategory));
         video.setVideoDesc(videoDesc);
@@ -104,10 +114,16 @@ public class VideoController {
      * @return 视频编辑页面路径
      */
     @GetMapping("/showUpdateVideo")
-    public String showUpdateVideo(@RequestParam String videoId, Model model) {
+    @ResponseBody
+    public Result showUpdateVideo(@RequestParam String videoId) {
         Video video = videoService.queryVideoById(videoId);
-        model.addAttribute("video", video);
-        return "video/updateVideo";
+        VideoVO videoVO = new VideoVO();
+        BeanUtils.copyProperties(video, videoVO);
+        if (videoVO.getPrice() != null) {
+            BigDecimal priceInYuan = new BigDecimal(videoVO.getPrice()).divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP);
+            videoVO.setPriceYuan(priceInYuan.toString());
+        }
+        return Result.ok(videoVO);
     }
 
     @GetMapping("/categories")

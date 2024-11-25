@@ -3,7 +3,6 @@ package com.wx.video.model.vo;
 import java.io.Serializable;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -19,7 +18,8 @@ public class VideoVO implements Serializable {
     private Integer salesCounts;
     private Integer categoryId;
     private String categoryName;
-    private BigDecimal price;
+    private Integer price;
+    private String priceYuan;
     private Integer status;
     private Integer isDelete;
     private Date createTime;
