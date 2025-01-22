@@ -32,7 +32,7 @@ CREATE TABLE `users`  (
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX (`openid`) USING BTREE,
     INDEX `idx_nickname` (`nickname`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 
 -- ----------------------------
@@ -61,7 +61,7 @@ CREATE TABLE `users_buy_videos`  (
     `video_id` varchar(64) NOT NULL COMMENT '视频',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX `user_video_rel`(`openid`, `video_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户购买的视频' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户购买的视频';
 
 -- ----------------------------
 -- Table structure for category
@@ -73,7 +73,7 @@ CREATE TABLE `category`  (
     `category_name` VARCHAR(255) NOT NULL COMMENT '类型名',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX `category_id` (`category_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '视频类型' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '视频类型';
 
 -- ----------------------------
 -- Records of category
@@ -105,7 +105,20 @@ CREATE TABLE `videos`  (
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX `idx_video_id` (`video_id`) USING BTREE,
     INDEX `idx_video_title` (`video_title`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '视频信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '视频信息表';
+
+-- ----------------------------
+-- Table structure for user_visit_log
+-- ----------------------------
+DROP TABLE IF EXISTS `user_visit_log`;
+CREATE TABLE `user_visit_log` (
+    `id` BIGINT(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '浏览id',
+    `openid` varchar(50) NOT NULL COMMENT '用户ID',
+    `video_id` varchar(64) NOT NULL COMMENT '视频ID',
+    `visit_time` DATETIME NOT NULL COMMENT '访问时间'
+    PRIMARY KEY (`id`) USING BTREE,
+    UNIQUE INDEX `user_video_rel`(`openid`, `video_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for order_info
@@ -143,7 +156,7 @@ CREATE TABLE `payment_info` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for videos
+-- Table structure for refund_info
 -- ----------------------------
 DROP TABLE IF EXISTS `refund_info`;
 CREATE TABLE `refund_info` (

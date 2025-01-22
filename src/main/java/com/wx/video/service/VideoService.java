@@ -1,6 +1,7 @@
 package com.wx.video.service;
 
 import com.wx.video.model.Category;
+import com.wx.video.model.UserVisitLog;
 import com.wx.video.model.Video;
 import com.wx.video.model.vo.VideoQueryVO;
 import com.wx.video.utils.PagedResult;
@@ -52,5 +53,10 @@ public interface VideoService {
      */
     Video queryVideoById(String videoId);
 
+    /**
+     * 查询视频分类信息
+     * @return 视频分类信息
+     */
     List<Category> getAllCategories();
+
 }

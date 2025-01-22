@@ -10,12 +10,12 @@ import com.wx.video.model.vo.VideoQueryVO;
 import com.wx.video.model.vo.VideoVO;
 import com.wx.video.service.VideoService;
 import com.wx.video.utils.PagedResult;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 @CacheConfig(cacheNames = {"VideoServiceImpl"})
 public class VideoServiceImpl implements VideoService {
 
-    @Autowired
+    @Resource
     private VideoMapper videoMapper;
-    @Autowired
+    @Resource
     private CategoryMapper categoryMapper;
 
 
@@ -116,5 +116,4 @@ public class VideoServiceImpl implements VideoService {
         queryWrapper.orderByAsc("category_id");
         return categoryMapper.selectList(queryWrapper);
     }
-
 }
