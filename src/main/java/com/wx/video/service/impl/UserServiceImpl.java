@@ -1,10 +1,13 @@
 package com.wx.video.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wx.video.mapper.UserMapper;
 import com.wx.video.model.User;
+import com.wx.video.model.vo.UserProfile;
+import com.wx.video.service.JwtService;
 import com.wx.video.service.UserService;
 import com.wx.video.utils.PagedResult;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +28,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     @Autowired
+    private JwtService jwtService;
+    @Autowired
     private UserMapper userMapper;
+
+
+    @Override
+    public UserProfile getProfile(String token) {
+        String openid = jwtService.getOpenidFromToken(token);
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("openid", openid);
+        User user = userMapper.selectOne(wrapper);
+        if (user != null) {
+            return UserProfile.instanceUserProfile(user.getFaceImage(), user.getNickname());
+        }
+        return UserProfile.instanceEmptyProfile();
+    }
 
 
     /**
@@ -121,6 +139,19 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateUserByOpenId(User user) {
+        try {
+            UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("openid", user.getOpenid())
+                    .set("face_image", user.getFaceImage())
+                    .set("nickname", user.getNickname());
+            return userMapper.update(user, updateWrapper) > 0;
+        } catch (Exception e) {
+            log.error("Error updating user: " + e.getMessage(), e);
+            throw e;
+        }
+    }
 
 }

@@ -2,7 +2,10 @@ package com.wx.video.api;
 
 import com.wx.video.model.User;
 import com.wx.video.model.vo.Result;
+import com.wx.video.model.vo.Result;
+import com.wx.video.model.vo.UserProfile;
 import com.wx.video.service.JwtService;
+import com.wx.video.service.UserService;
 import com.wx.video.service.WeChatLoginService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +14,15 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.wx.video.utils.Constrants.BEARER_PREFIX;
+
 @RestController
 @Slf4j
 @RequestMapping("/api")
 public class WeChatLoginController {
+
+    @Resource
+    private UserService userService;
 
     @Resource
     private WeChatLoginService weChatLoginService;
@@ -23,7 +31,7 @@ public class WeChatLoginController {
     private JwtService jwtService;
 
     @PostMapping("/login")
-    public Result login(@RequestParam String code) {
+    public Result login(@RequestBody String code) {
         // 调用微信服务获取 openid 和 session_key
         Map<String, String> wxData = null;
         try {
@@ -45,5 +53,11 @@ public class WeChatLoginController {
         response.put("token", token);
         response.put("openid", user.getOpenid());
         return Result.ok(response);
+    }
+
+    @GetMapping("/user/profile")
+    public UserProfile getProfile(@RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.substring(BEARER_PREFIX.length());
+        return userService.getProfile(token);
     }
 }

@@ -1,6 +1,7 @@
 package com.wx.video.service.impl;
 
 import com.wx.video.config.WxConfig;
+import com.wx.video.config.WxMappingJackson2HttpMessageConverter;
 import com.wx.video.mapper.UserMapper;
 import com.wx.video.model.User;
 import com.wx.video.service.UserService;
@@ -8,8 +9,12 @@ import com.wx.video.service.WeChatLoginService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -19,8 +24,14 @@ import java.util.Map;
 @Slf4j
 public class WeChatLoginServiceImpl implements WeChatLoginService {
 
-    @Resource
-    private WxConfig wxConfig;
+    @Value("${wx.app-id}")
+    private String appId;
+
+    @Value("${wx.app-secret}")
+    private String appSecret;
+
+    @Value("${wx.wx-url}")
+    private String wxUrl;
 
     @Resource
     private UserService userService;
@@ -36,16 +47,29 @@ public class WeChatLoginServiceImpl implements WeChatLoginService {
     public Map<String, String> getWxSession(String code) throws Exception {
         try {
             // 构造请求微信API的URL，包含小程序的appid、appsecret以及用户的临时登录凭证
-            String url = String.format("%s?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
-                    wxConfig.getWxUrl(), wxConfig.getAppId(), wxConfig.getAppSecret(), code);
-
-            // 使用RestTemplate发送HTTP GET请求到微信API
             RestTemplate restTemplate = new RestTemplate();
-            // 发送请求并接收响应，响应为一个Map对象
-            Map<String, String> response = restTemplate.getForObject(url, HashMap.class);
-            // 记录成功获取到的用户信息
-            log.info("Successfully fetched user info: {}", response);
-            return response;
+            // // 发送请求并接收响应，响应为一个Map对象
+            // Map<String, String> response = restTemplate.getForObject(url, HashMap.class);
+
+            restTemplate.getMessageConverters().add(new WxMappingJackson2HttpMessageConverter());
+            String url = UriComponentsBuilder.fromHttpUrl(wxUrl)
+                    .queryParam("appid", appId)
+                    .queryParam("secret", appSecret)
+                    .queryParam("js_code", code)
+                    .queryParam("grant_type", "authorization_code")
+                    .toUriString();
+            ResponseEntity<Map<String, String>> response = restTemplate.exchange(url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<Map<String, String>>(){});
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("Successfully fetched user info: {}", response.getBody());
+                return response.getBody();
+            } else {
+                log.error("Fetch user info from WeChat API account error", response.getStatusCode());
+                throw new RuntimeException("Failed to login with code: " + code);
+            }
         } catch (Exception e) {
             // 处理网络请求失败的情况
             log.error("Failed to fetch user info from WeChat API", e);

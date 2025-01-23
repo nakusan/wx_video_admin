@@ -34,7 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
         // excludePathPatterns("/user/login") 表示除了登陆之外，因为登陆不需要登陆也可以访问
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/management/login", "/static/**");
+                .excludePathPatterns("/management/login", "/api/**", "/static/**", "/error");
         // addPathPatterns("/api/**") 拦截需要验证的接口
         // excludePathPatterns("/api/login") 登录接口不拦截
         registry.addInterceptor(jwtInterceptor)

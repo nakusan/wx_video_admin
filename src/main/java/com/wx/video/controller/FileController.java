@@ -32,7 +32,7 @@ public class FileController {
             @RequestParam("filename") String filename,
             @RequestParam("file") MultipartFile file) {
         try {
-            Video video = fileService.upload(file);
+            Video video = fileService.uploadVideo(file);
 
             video.setVideoTitle(filename); // 视频Title
             // 添加视频到数据库

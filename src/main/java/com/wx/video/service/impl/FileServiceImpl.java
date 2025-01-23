@@ -6,6 +6,8 @@ import com.aliyun.oss.model.CannedAccessControlList;
 
 import com.aliyun.oss.model.PutObjectRequest;
 import com.wx.video.enums.VideoStatusEnum;
+import com.wx.video.mapper.FileMapper;
+import com.wx.video.model.FileInfo;
 import com.wx.video.model.Video;
 import com.wx.video.service.FileService;
 import com.wx.video.utils.ConstantPropertiesUtil;
@@ -15,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 
 import org.n3r.idworker.Sid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,14 +32,58 @@ import java.util.Map;
 @Slf4j
 public class FileServiceImpl implements FileService {
 
+    @Autowired
+    private FileMapper fileMapper;
+
+    @Override
+    public FileInfo uploadFile(MultipartFile file) throws Exception {
+        String endPoint = ConstantPropertiesUtil.END_POINT;
+        String accessKeyId = ConstantPropertiesUtil.ACCESS_KEY_ID;
+        String accessKeySecret = ConstantPropertiesUtil.ACCESS_KEY_SECRET;
+        String bucketName = ConstantPropertiesUtil.BUCKET_NAME;
+        String fileHost = ConstantPropertiesUtil.FILE_HOST;
+
+        OSS ossClient = null;
+        String id = Sid.nextShort();
+        ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, accessKeySecret);
+        if (!ossClient.doesBucketExist(bucketName)) {
+            //创建bucket
+            ossClient.createBucket(bucketName);
+            //设置oss实例的访问权限，
+            ossClient.setBucketAcl(bucketName, CannedAccessControlList.PublicRead);
+        }
+        //构建文件日期
+        String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        //文件扩展名
+        String newFileName = id + "." + FilenameUtils.getExtension(file.getOriginalFilename());
+        // URL
+        String fileUrl = fileHost + "/" + date + "/" + newFileName;
+        //获取上传文件流
+        InputStream inputStream = file.getInputStream();
+        long contentLength = file.getSize();
+
+        ossClient.putObject(new PutObjectRequest(bucketName,fileUrl, inputStream).
+                <PutObjectRequest>withProgressListener(new PutObjectProgressListener(contentLength)));
+
+        //获取url地址
+        String filePath = "https://" + bucketName + "." + endPoint + "/" + fileUrl;
+
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.setName(newFileName);
+        fileInfo.setPath(filePath);
+        fileInfo.setStatus(1);
+        fileMapper.insert(fileInfo);
+        return fileInfo;
+    }
+
     /**
-     * 输出文件到oss
+     * 输出视频文件到oss
      *
      * @param file
      * @return
      */
     @Override
-    public Video upload(MultipartFile file) throws Exception {
+    public Video uploadVideo(MultipartFile file) throws Exception {
 
         String endPoint = ConstantPropertiesUtil.END_POINT;
         String accessKeyId = ConstantPropertiesUtil.ACCESS_KEY_ID;

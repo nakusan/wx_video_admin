@@ -5,11 +5,13 @@ import com.wx.video.mapper.VideoMapper;
 import com.wx.video.model.UserVisitLog;
 import com.wx.video.service.UserVisitLogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.List;
 
+@Service
 public class UserVisitLogServiceImpl implements UserVisitLogService {
 
     @Resource

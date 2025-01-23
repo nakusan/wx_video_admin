@@ -1,6 +1,7 @@
 package com.wx.video.service;
 
 import com.wx.video.model.User;
+import com.wx.video.model.vo.UserProfile;
 import com.wx.video.utils.PagedResult;
 
 /**
@@ -8,6 +9,13 @@ import com.wx.video.utils.PagedResult;
  * @description 用户服务接口
  */
 public interface UserService {
+
+    /**
+     * 查询用户头像昵称等信息
+     * @param token
+     * @return
+     */
+    UserProfile getProfile(String token);
     /**
      * 查询用户列表
      * @param user 用户
@@ -40,4 +48,7 @@ public interface UserService {
      * @return boolean 表示用户信息是否保存成功
      */
     boolean updateUser(User user);
+
+    boolean updateUserByOpenId(User user);
+
 }

@@ -11,6 +11,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.wx.video.utils.Constrants.BEARER_PREFIX;
+
 
 /**
  * @description api訪問拦截器
@@ -40,7 +42,6 @@ public class JwtInterceptor  implements HandlerInterceptor {
         String authorizationHeader = request.getHeader("Authorization");
 
         // 定义 Bearer 前缀
-        final String BEARER_PREFIX = "Bearer ";
 
         // 验证 JWT
         if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_PREFIX)) {

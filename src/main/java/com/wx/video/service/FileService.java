@@ -1,15 +1,18 @@
 package com.wx.video.service;
 
+import com.wx.video.model.FileInfo;
 import com.wx.video.model.Video;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FileService {
+
+    FileInfo uploadFile(MultipartFile file) throws Exception;
     /**
      * 输出文件到oss
      * @param file
      * @return
      */
-    public Video upload(MultipartFile file) throws Exception;
+    public Video uploadVideo(MultipartFile file) throws Exception;
 
 //    public List<OSSObjectSummary> getObjectList();
 //
