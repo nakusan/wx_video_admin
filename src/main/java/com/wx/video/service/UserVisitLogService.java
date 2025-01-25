@@ -10,7 +10,7 @@ public interface UserVisitLogService {
     /**
      * 保存用户访问信息
      */
-    void saveUserVisitLog(UserVisitLogVO visitLog);
+    void saveUserVisitLog(String openId, String videoId);
 
     /**
      * 根据用户名获取用户访问信息

@@ -22,16 +22,16 @@ public class UserVisitLogServiceImpl implements UserVisitLogService {
     private UserVisitLogMapper userVisitLogMapper;
 
     @Override
-    public void saveUserVisitLog(UserVisitLogVO visitLog) {
+    public void saveUserVisitLog(String openId, String videoId) {
         QueryWrapper<UserVisitLog> wrapper = new QueryWrapper<>();
-        wrapper.eq("openid", visitLog.getOpenid());
-        wrapper.eq("video_id", visitLog.getVideoId());
+        wrapper.eq("openid", openId);
+        wrapper.eq("video_id", videoId);
         UserVisitLog userVisitLog = userVisitLogMapper.selectOne(wrapper);
 
         if (userVisitLog == null) {
             UserVisitLog insertUserVisitLog = new UserVisitLog();
-            insertUserVisitLog.setOpenid(visitLog.getOpenid());
-            insertUserVisitLog.setVideoId(visitLog.getVideoId());
+            insertUserVisitLog.setOpenid(openId);
+            insertUserVisitLog.setVideoId(videoId);
             insertUserVisitLog.setVisitTime(new Date());
             userVisitLogMapper.insert(insertUserVisitLog);
         } else {
