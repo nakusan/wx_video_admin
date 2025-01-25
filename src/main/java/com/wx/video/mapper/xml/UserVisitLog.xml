@@ -2,4 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wx.video.mapper.UserVisitLogMapper">
 
+    <select id="getUserVisitLogByUserId" resultType="com.wx.video.model.vo.UserVisitLogVO">
+        SELECT
+            t.id          as id,
+            t.openid      as openid,
+            u.nickname    as nickname,
+            t.video_id    as videoId,
+            v.video_title as videoTitle,
+            v.video_desc  as videoDescription,
+            v.video_path  as videoPath,
+            v.thumb_url   as thumbUrl,
+            v.duration    as duration,
+            t.visit_time  as visitTime
+        FROM t_user_visit_log t
+                 LEFT JOIN users u
+                           ON t.openid = u.openid
+                 LEFT JOIN videos v
+                           ON t.video_id = v.video_id
+        WHERE t.openid = #{openid}
+        ORDER BY t.visit_time DESC
+    </select>
+
 </mapper>

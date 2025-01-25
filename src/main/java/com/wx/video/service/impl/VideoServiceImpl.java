@@ -74,7 +74,6 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-//    @Cacheable(key = "methodName + #p0 + #p1")
     public PagedResult queryVideoList(VideoQueryVO queryVO, Integer page, Integer pageSize) {
         // 计算偏移量
         int offset = (page - 1) * pageSize;
@@ -115,5 +114,23 @@ public class VideoServiceImpl implements VideoService {
         QueryWrapper<Category> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByAsc("category_id");
         return categoryMapper.selectList(queryWrapper);
+    }
+
+    @Override
+//    @Cacheable(key = "methodName + #p0 + #p1")
+    public List<VideoVO> queryVideoListByApi(VideoQueryVO queryVO, Integer page, Integer pageSize) {
+        // 计算偏移量
+        int offset = (page - 1) * pageSize;
+        // 查询分页数据
+        List<VideoVO> videoList = videoMapper.queryAllVideos(queryVO, offset, pageSize);
+        // 格式化价格
+        List<VideoVO> formattedVideoList = videoList.stream()
+                .peek(video -> {
+                    if (video.getPrice() != null) {
+                        BigDecimal priceInYuan = new BigDecimal(video.getPrice()).divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP);
+                        video.setPriceYuan(priceInYuan.toString());
+                    }
+                }).collect(Collectors.toList());
+        return formattedVideoList;
     }
 }

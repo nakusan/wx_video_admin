@@ -8,7 +8,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@TableName("user_visit_log")
+@TableName("t_user_visit_log")
 public class UserVisitLog {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;

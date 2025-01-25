@@ -112,7 +112,7 @@ CREATE TABLE `videos`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `order_info`;
 CREATE TABLE `order_info` (
-    `id` BIGINT(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '订单id',
+    `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '订单id',
     `title` varchar(256) DEFAULT NULL COMMENT '订单标题',
     `order_no` varchar(50) DEFAULT NULL COMMENT '商户订单编号',
     `user_id` bigint(20) DEFAULT NULL COMMENT '用户id',
@@ -143,7 +143,7 @@ CREATE TABLE `payment_info` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Table structure for videos
+-- Table structure for refund_info
 -- ----------------------------
 DROP TABLE IF EXISTS `refund_info`;
 CREATE TABLE `refund_info` (
@@ -174,4 +174,16 @@ CREATE TABLE `t_file_info`  (
     `create_time` datetime(0) NOT NULL DEFAULT now() COMMENT '创建时间',
     `update_time` datetime(0) NOT NULL DEFAULT now() COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件信息' ROW_FORMAT = Dynamic;
+
+
+DROP TABLE IF EXISTS `t_user_visit_log`;
+CREATE TABLE `t_user_visit_log`  (
+    `id` BIGINT AUTO_INCREMENT,
+    `openid` varchar(50) NOT NULL COMMENT '用户id',
+    `video_id` varchar(64) NOT NULL COMMENT '视频id',
+    `visit_time` datetime(0) NOT NULL DEFAULT now() COMMENT '浏览时间',
+    PRIMARY KEY (`id`) USING BTREE,
+    UNIQUE INDEX `user_video_rel`(`openid`, `video_id`) USING BTREE,
+    INDEX `idx_visit_time` (`visit_time`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件信息' ROW_FORMAT = Dynamic;

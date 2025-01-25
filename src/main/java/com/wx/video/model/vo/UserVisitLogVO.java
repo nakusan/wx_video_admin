@@ -9,6 +9,12 @@ import java.util.Date;
 public class UserVisitLogVO implements Serializable {
     private Long id;
     private String openid;
+    private String nickname;
     private String videoId;
+    private String videoTitle;
+    private String videoDescription;
+    private String videoPath;
+    private String thumbUrl;
+    private String duration;
     private Date visitTime;
 }
