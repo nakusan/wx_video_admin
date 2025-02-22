@@ -1,21 +1,3 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : mysql
- Source Server Type    : MySQL
- Source Server Version : 50723
- Source Host           : localhost:3306
- Source Schema         : wx_video
-
- Target Server Type    : MySQL
- Target Server Version : 50723
- File Encoding         : 65001
-
- Date: 28/09/2024
-*/
-
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
 -- Table structure for users
@@ -27,8 +9,8 @@ CREATE TABLE `users`  (
     `session_key` varchar(100) NOT NULL COMMENT 'session_key',
     `face_image` varchar(255) NULL DEFAULT NULL COMMENT '头像',
     `nickname` varchar(100) NULL DEFAULT NULL COMMENT '昵称',
-    `create_time` datetime NOT NULL COMMENT '创建时间',
-    `update_time` datetime NOT NULL COMMENT '修改时间',
+    `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX (`openid`) USING BTREE,
     INDEX `idx_nickname` (`nickname`) USING BTREE
@@ -100,8 +82,8 @@ CREATE TABLE `videos`  (
     `price` INT(11) DEFAULT NULL COMMENT '价格（分）',
     `status` TINYINT(1) NOT NULL DEFAULT 2 COMMENT '视频状态：1=发布成功，2=禁止播放',
     `is_delete` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否删除：0=否，1=是',
-    `create_time` DATETIME NOT NULL COMMENT '创建时间',
-    `update_time` DATETIME NOT NULL COMMENT '修改时间',
+    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX `idx_video_id` (`video_id`) USING BTREE,
     INDEX `idx_video_title` (`video_title`) USING BTREE
@@ -171,8 +153,8 @@ CREATE TABLE `t_file_info`  (
     `name` varchar(255) NOT NULL COMMENT '文件名',
     `path` varchar(255) NOT NULL COMMENT '文件存放路径',
     `status` int(1) NOT NULL COMMENT '状态：1、有效；2、失效',
-    `create_time` datetime(0) NOT NULL DEFAULT now() COMMENT '创建时间',
-    `update_time` datetime(0) NOT NULL DEFAULT now() COMMENT '修改时间',
+    `create_time` datetime(0) DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime(0) DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件信息' ROW_FORMAT = Dynamic;
 

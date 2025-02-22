@@ -40,7 +40,7 @@ public class VideoInfoController {
 
     @PostMapping("/saveUserVisitLog")
     public Result saveUserVisitLog(@RequestHeader("Authorization") String authorizationHeader,
-                                   @RequestParam String videoId) {
+                                   @RequestBody String videoId) {
         try {
             String token = authorizationHeader.substring(BEARER_PREFIX.length());
             String openId = jwtService.getOpenidFromToken(token);
@@ -52,8 +52,8 @@ public class VideoInfoController {
         return Result.ok("数据更新成功");
     }
 
-    @GetMapping("/queryVideoInfoList")
-    public Result queryVideoInfoList(VideoQueryVO queryVO, Integer page) {
+    @GetMapping("/queryVideoInfoList/{page}")
+    public Result queryVideoInfoList(VideoQueryVO queryVO, @PathVariable Integer page) {
         List<VideoVO> videoInfos = videoService.queryVideoListByApi(queryVO, page, 10);
         return Result.ok(videoInfos);
     }
